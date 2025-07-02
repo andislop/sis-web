@@ -4,12 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "concurrently \"npm run dev:astro\" \"npm run dev:server\"",
-    "dev:astro": "astro dev",
-    "dev:server": "node server/server.js",
-    "build": "npm run build:astro && npm run build:server",
-    "start": "cross-env NODE_ENV=production node server/server.js",
-    "build:astro": "astro build",
-    "build:server": "echo 'No build step required for server'",
+  "dev:astro": "astro dev",
+  "dev:server": "node server/server.js",
+  "build": "npm run build:astro && npm run build:server",
+  "build:astro": "astro build",
+  "build:server": "echo 'No build step for server'",
+  "start": "node server/server.js",
     "preview": "npm run preview:astro && npm run preview:server",
     "preview:astro": "astro preview",
     "preview:server": "node server/server.js"
