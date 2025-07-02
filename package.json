@@ -7,6 +7,7 @@
     "dev:astro": "astro dev",
     "dev:server": "node server/server.js",
     "build": "npm run build:astro && npm run build:server",
+    "start": "cross-env NODE_ENV=production node server/server.js",
     "build:astro": "astro build",
     "build:server": "echo 'No build step required for server'",
     "preview": "npm run preview:astro && npm run preview:server",
