@@ -19,6 +19,13 @@ body {
 .bar-search {
     padding: var(--spacing-8) var(--spacing-24);
     width: 100%;
+    position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: var(--theme-dark);
+        box-shadow: 0 2px 10px var(--theme-dark);
 }
 
 .bar-search .bar-content {
@@ -802,4 +809,11 @@ small.form-text {
     .modal-body .section-title {
         font-size: 1.2rem;
     }
+}
+
+/* Estilos para el contenedor de notificaciones desplazables */
+.scrollable-notifications {
+  max-height: 300px; /* Ajusta la altura máxima según tu diseño */
+  overflow-y: auto;
+  padding-right: 8px; /* Espacio para la barra de scroll */
 }

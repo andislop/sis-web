@@ -148,7 +148,7 @@ import "../../style/style-admin/cursos.css";
 </div>
 
 <!-- Modal para Editar Curso -->
-<div class="modal fade" id="modalEditarCurso" tabindex="-1" aria-labelledby="modalEditarCursoLabel" aria-hidden="true">
+<div class="modal fade" id="modalEditarCurso" tabindex="-1" aria-labelledby="modalEditarCursoLabel" aria-hidden="true"  >
   <div class="modal-dialog modal-dialog-centered modal-dialog-custom-width">
     <div class="modal-content">
       <div class="modal-header">
@@ -207,6 +207,7 @@ import "../../style/style-admin/cursos.css";
         <p><strong>Nombre del Curso:</strong> <span id="detalleCursoNombre"></span></p>
         <p><strong>Período Académico:</strong> <span id="detalleCursoPeriodo"></span></p>
         <p><strong>Sección:</strong> <span id="detalleCursoSeccion"></span></p>
+        <p><strong>Estado del Curso:</strong> <span id="detalleCursoEstado"></span></p> <!-- Added this line -->
         <h6 class="section-title mt-4">Materias del Curso</h6>
         <div id="tablaMateriasCurso"></div>
 
@@ -352,7 +353,7 @@ import "../../style/style-admin/cursos.css";
   const itemsPerPage = 5; // Ajusta según tu preferencia
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await fetchCursosSummary();
+    await fetchCursosSummary(); // Llama a esta función para obtener los datos de resumen
     await fetchCursos(currentPage); // Carga inicial sin término de búsqueda
     await loadSelectOptions();
 
@@ -396,15 +397,18 @@ import "../../style/style-admin/cursos.css";
 
   async function fetchCursosSummary() {
     try {
+      console.log("DEBUG: Calling /cursos-academicos/resumen API for summary counts...");
       const response = await fetch(`${API_BASE_URL}/cursos-academicos/resumen`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      document.getElementById('totalCursosCount').textContent = data.totalCursos;
-      document.getElementById('activeCursosCount').textContent = data.cursosActivos;
-      document.getElementById('totalEstudiantesInscritosCount').textContent = data.totalEstudiantesInscritos;
-      document.getElementById('totalProfesoresAsignadosCount').textContent = data.totalProfesoresAsignados;
+      console.log("DEBUG: Data received from /cursos-academicos/resumen:", data);
+
+      document.getElementById('totalCursosCount').textContent = data.totalCursos || '0';
+      document.getElementById('activeCursosCount').textContent = data.cursosActivos || '0';
+      document.getElementById('totalEstudiantesInscritosCount').textContent = data.totalEstudiantesInscritos || '0';
+      document.getElementById('totalProfesoresAsignadosCount').textContent = data.totalProfesoresAsignados || '0';
     } catch (error) {
       console.error('Error al obtener resumen de cursos:', error);
       mostrarAlerta('No se pudo cargar el resumen de cursos.', 'danger');
@@ -423,21 +427,37 @@ import "../../style/style-admin/cursos.css";
         url += `&search=${encodeURIComponent(searchTerm)}`;
       }
 
+      console.log("DEBUG: Calling /cursos-academicos API for table data:", url);
       const response = await fetch(url);
       if (!response.ok) {
+        if (response.status === 404) {
+          tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No se encontraron cursos.</td></tr>`;
+          // No actualizamos los contadores de resumen aquí, ya que fetchCursosSummary lo hace
+          return;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
+      const cursos = data.cursos;
+      const totalPages = data.totalPages;
+      currentPage = data.currentPage;
 
-      tableBody.innerHTML = ''; // Limpiar el mensaje de carga
+      console.log("DEBUG: Data received from API for fetchCursos (table data):", data);
+      // Los contadores de resumen (totalCursosCount, activeCursosCount, totalEstudiantesInscritosCount, totalProfesoresAsignadosCount)
+      // se actualizan *exclusivamente* en fetchCursosSummary().
+      // Eliminamos las líneas que actualizaban totalCursosCount y activeCursosCount aquí para evitar sobrescribir.
 
-      if (!data.cursos || data.cursos.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="9" class="text-center">No se encontraron cursos que coincidan con "${searchTerm}".</td></tr>`;
+
+      tableBody.innerHTML = ''; 
+
+      if (!cursos || cursos.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No se encontraron cursos que coincidan con "${searchTerm}".</td></tr>`;
         setupPagination(0, 1, paginationCursos, 'curso'); // Reiniciar paginación si no hay resultados
         return;
       }
 
-      data.cursos.forEach((curso, index) => {
+      cursos.forEach((curso, index) => {
         // Mostrar cantidad de estudiantes y profesores si existen los arrays
         const totalEstudiantes = Array.isArray(curso.estudiantes_info) ? curso.estudiantes_info.length : (curso.total_estudiantes_curso || 0);
         const totalProfesores = Array.isArray(curso.profesores_info) ? curso.profesores_info.length : (curso.total_profesores_curso || 0);
@@ -450,10 +470,8 @@ import "../../style/style-admin/cursos.css";
           <td>${curso.total_materias_curso}</td>
           <td>${totalEstudiantes}</td>
           <td>${totalProfesores}</td>
-          <td>
-            <span ${curso.estado === 1 ? 'bg-success' : (curso.estado === 0 ? 'bg-danger' : 'bg-warning')}>
-              ${curso.estado === 1 ? 'Activo' : (curso.estado === 0 ? 'Inactivo' : 'Desconocido')}
-            </span>
+         <td>
+            <span>${curso.estado === 1 ? 'Activo' : (curso.estado === 0 ? 'Inactivo' : 'Desconocido')}</span>
           </td>
           <td>
             <div class="dropdown">
@@ -474,7 +492,7 @@ import "../../style/style-admin/cursos.css";
         `;
       });
 
-      setupPagination(data.totalPages, page, paginationCursos, 'curso', searchTerm); // Pasa searchTerm a setupPagination
+      setupPagination(totalPages, page, paginationCursos, 'curso', searchTerm); // Pasa searchTerm a setupPagination
       attachTableEventListeners(); // Attach event listeners after content is loaded
 
     } catch (error) {
@@ -649,7 +667,7 @@ import "../../style/style-admin/cursos.css";
         if (alertDiv) alertDiv.style.display = 'none';
       }, 1500);
 
-      await fetchCursosSummary();
+      await fetchCursosSummary(); // Vuelve a cargar el resumen para actualizar contadores
       await fetchCursos(currentPage); // Recargar la tabla
     } catch (error) {
       console.error('Error al añadir curso:', error);
@@ -701,6 +719,12 @@ import "../../style/style-admin/cursos.css";
         document.getElementById('detalleCursoNombre').textContent = curso.nombre_curso || 'N/A';
         document.getElementById('detalleCursoPeriodo').textContent = curso.nombre_periodo || 'N/A';
         document.getElementById('detalleCursoSeccion').textContent = curso.nombre_seccion || 'N/A';
+        // Populate course status
+        const detalleCursoEstado = document.getElementById('detalleCursoEstado');
+        if (detalleCursoEstado) {
+            detalleCursoEstado.textContent = curso.estado === 1 ? 'Activo' : (curso.estado === 0 ? 'Inactivo' : 'Desconocido');
+        }
+
 
         // Populate Materias table
         const tablaMateriasCurso = document.getElementById('tablaMateriasCurso');
@@ -718,9 +742,17 @@ import "../../style/style-admin/cursos.css";
         // Populate Estudiantes table
         const tablaEstudiantesCurso = document.getElementById('tablaEstudiantesCurso');
         if (Array.isArray(curso.estudiantes_info) && curso.estudiantes_info.length > 0) {
-            let estudiantesHtml = `<div class=\"table-responsive\"><table class=\"table table-bordered table-sm table-dark\"><thead><tr><th>Período</th><th>Estudiante</th><th>Materia</th></tr></thead><tbody>`;
+            // MODIFICACIÓN: Añadir columna 'Estado' al encabezado
+            let estudiantesHtml = `<div class=\"table-responsive\"><table class=\"table table-bordered table-sm table-dark\"><thead><tr><th>Período</th><th>Estudiante</th><th>Materia</th><th>Estado</th></tr></thead><tbody>`;
             curso.estudiantes_info.forEach(estudiante => {
-                estudiantesHtml += `<tr><td>${estudiante.nombre_periodo || 'N/A'}</td><td>${estudiante.nombre_usuario || 'N/A'}</td><td>${estudiante.nombre_materia || 'N/A'}</td></tr>`;
+                // MODIFICACIÓN: Añadir celda 'Estado' y aplicar estilo
+                const estadoClase = estudiante.estado_materia === 'Aprobado' ? 'text-success' : 'text-danger';
+                estudiantesHtml += `<tr>
+                                        <td>${estudiante.nombre_periodo || 'N/A'}</td>
+                                        <td>${estudiante.nombre_usuario || 'N/A'}</td>
+                                        <td>${estudiante.nombre_materia || 'N/A'}</td>
+                                        <td class="${estadoClase}">${estudiante.estado_materia || 'N/A'}</td>
+                                    </tr>`;
             });
             estudiantesHtml += `</tbody></table></div>`;
             tablaEstudiantesCurso.innerHTML = estudiantesHtml;
@@ -795,7 +827,7 @@ import "../../style/style-admin/cursos.css";
       if (bootstrapModal) bootstrapModal.hide();
 
       form.classList.remove('was-validated');
-      await fetchCursosSummary();
+      await fetchCursosSummary(); // Vuelve a cargar el resumen para actualizar contadores
       await fetchCursos(currentPage); // Recargar la tabla
     } catch (error) {
       console.error('Error al actualizar curso:', error);
@@ -828,7 +860,7 @@ import "../../style/style-admin/cursos.css";
 
         const result = await response.json();
         mostrarAlerta(result.message, 'success');
-        await fetchCursosSummary();
+        await fetchCursosSummary(); // Vuelve a cargar el resumen para actualizar contadores
         await fetchCursos(currentPage); // Recargar la tabla
       } catch (error) {
         console.error('Error al cambiar estado del curso:', error);
