@@ -98,7 +98,6 @@ body::-webkit-scrollbar-thumb:hover {
     /* Cambia el color al pasar el mouse */
 }
 
-<<<<<<< HEAD
 /* Sticky header para todas las tablas del sistema */
 table thead th {
   position: sticky;
@@ -142,9 +141,3 @@ table thead th {
 .input-group > .btn {
   height: 48px;
 }
-=======
-.Layout-grid-area {
-    margin-top: 5rem !important;
-}
-
->>>>>>> Responsive_Web_Design

@@ -113,19 +113,11 @@
     color: var(--color-quaternary);
 }
 
-.profile-card .profile-avatar {
-    width: 30% !important; /* Ajusta el tamaño de la imagen al 30% del ancho del contenedor */
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .profile-main-info {
     display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        width: 100%;
-        justify-content: center;
-        flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 /* Icono de perfil en la vista de perfil (sustituye a .profile-avatar) */
@@ -170,17 +162,13 @@
     text-align: left;
 }
 
-.profile-details {
-    width: 100%;
-}
-
 .profile-details p {
     font-size: 1.1em;
     margin-bottom: 10px;
     color: var(--color-quaternary);
     text-align: left;
+    width: 100%;
     font-family: var(--font-family-Paragraph);
-    text-align: center;
 }
 
 .profile-details p strong {
@@ -241,13 +229,6 @@ small.form-text {
     flex-direction: column;
     align-items: center;
     margin-bottom: 30px;
-    width: 50%;
-    margin: 0 auto;
-    margin-bottom: 1rem;
-}
-
-.profile-header-edit img {
-    border-radius: 50%;
 }
 
 /* Icono de perfil en la vista de edición (reemplaza a .profile-avatar de edición) */
