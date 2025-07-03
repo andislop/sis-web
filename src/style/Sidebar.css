@@ -7,10 +7,7 @@
     left: 0;
     width: 250px;
     display: flex;
-<<<<<<< HEAD
-=======
     padding: 2rem 0.5rem;
->>>>>>> Responsive_Web_Design
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
@@ -18,7 +15,6 @@
     height: calc(100vh - 4.5rem);
     overflow-y: auto;
     font-family: var(--font-family-Paragraph);
-<<<<<<< HEAD
     background: #17021a; /* Color de fondo específico solicitado */
     z-index: 1000; /* Asegurar que esté por encima del contenido */
     transition: width 0.3s ease;
@@ -29,13 +25,11 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-=======
     position: fixed;
     top: 4.5rem;
     background-color: var(--theme-dark);
     z-index: 50;
     border-radius: 0 8px 8px 0;
->>>>>>> Responsive_Web_Design
 }
 
 .bar-home-content .close-sidebar {
