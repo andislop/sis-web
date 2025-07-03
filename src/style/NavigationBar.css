@@ -19,6 +19,13 @@ body {
 .bar-search {
     padding: var(--spacing-8) var(--spacing-24);
     width: 100%;
+    position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        background: var(--theme-dark);
+        box-shadow: 0 2px 10px var(--theme-dark);
 }
 
 .bar-search .bar-content {

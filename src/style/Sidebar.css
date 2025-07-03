@@ -3,13 +3,18 @@
 
 .bar-home-content {
     display: flex;
-    padding: 1rem 0.5rem;
+    padding: 2rem 0.5rem;
     flex-direction: column;
     justify-content: space-between;
     /* place-content: center; */
     height: calc(100vh - 5rem);
     overflow-y: auto;
     font-family: var(--font-family-Paragraph);
+    position: fixed;
+    top: 4.5rem;
+    background-color: var(--theme-dark);
+    z-index: 50;
+    border-radius: 0 8px 8px 0;
 }
 
 .bar-home-content .close-sidebar {

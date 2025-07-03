@@ -97,3 +97,8 @@ body::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-secondary);
     /* Cambia el color al pasar el mouse */
 }
+
+.Layout-grid-area {
+    margin-top: 5rem !important;
+}
+
