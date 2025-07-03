@@ -61,10 +61,10 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('/public/img/images.jpg'); /* Asegúrate de que esta ruta sea correcta */
+    background-image: url('/public/img/graduacion.jpg'); /* Asegúrate de que esta ruta sea correcta */
     background-size: cover;
     background-position: center;
-    filter: blur(6px) brightness(0.4); /* Ajustado a 0.9 para que sea menos oscuro */
+    filter: blur(1px) brightness(0.4); /* Ajustado a 0.9 para que sea menos oscuro */
     z-index: -2; /* Detrás del contenido pero delante de las elipses */
     pointer-events: none; /* Permite interacciones a través de él */
 }
@@ -79,6 +79,7 @@ body {
     overflow: hidden;
     position: relative;
     padding-top: 80px; /* Espacio para el header fijo */
+    justify-content: center;
 }
 
 .welcome-elipce {
@@ -235,7 +236,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center !important;
     align-items: center;
 }
 
